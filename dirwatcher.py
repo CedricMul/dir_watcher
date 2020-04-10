@@ -25,6 +25,7 @@ def watch_dir(args):
         '\nKey Phrase: {}'
         .format(args.path, args.ext, args.magic_key)
     )
+    """Sets Bool variable to switch off the loop"""
     looping = True
     while looping:
         try:
