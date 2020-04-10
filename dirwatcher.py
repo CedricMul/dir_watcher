@@ -10,46 +10,23 @@ import time
 
 logger = logging.getLogger(__file__)
 def signal_handler(sig_num, frame):
-    logger.warn('Recieved ' + signal.Signals(sig_num).name)
-    signames = dict((k, v) for v, k in reversed(sorted(signal.__dict__.items()))
+    signames = dict((k, v) for v, k in reversed(
+        sorted(signal.__dict__.items())
+    )
     if v.startswith('SIG') and not v.startswith('SIG_'))
     logger.warn('Received ' + signames[sig_num])
-    exit_flag = True
 
 def watch_dir(args):
-    logger.info('\nWatching Directory: {}\nFile Extension: {}\nKey Phrase: {}'
+    logger.info(
+        '\nWatching Directory: {}'
+        '\nFile Extension: {}'
+        '\nKey Phrase: {}'
         .format(args.path, args.ext, args.magic_key)
     )
     while True:
         try:
             logger.info('LOOPING...')
-            """If the directory does not exist, the program will let you know
-            and update every interval that the directory does not exist until
-            it does. Then it reads every file with the matching extension within
-            that directory. If the string is contained in the file, the reader
-            return true, points to the file and exits"""
-            try:
-                for f in os.listdir(args.path):
-                    ex = os.path.splitext(f)[1]
-                    if ex == args.ext:
-                        with open('{}/{}'.format(args.path, f), 'r') as r:
-                            for i in r:
-                                call = file_reader(i, args.magic_key)
-                                if call:
-                                    logger.info("\n\n"
-                                        "^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^\n"
-                                        "Magic Key Word Discovered in: {}\n"
-                                        "v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v\n"
-                                        .format(f)
-                                    )
-                                    sys.exit()
-            except OSError:
-                logger.info(
-                    '\n'
-                    '************************************************\n'
-                    'File and/or directory does not currently exist\n'
-                    '************************************************\n'
-                )
+            dir_read_loop(args)
             time.sleep(args.interval)
         except KeyboardInterrupt:
             logger.info(
@@ -60,6 +37,37 @@ def watch_dir(args):
                 "\n\n")
             break
 
+def dir_read_loop(args):
+    """If the directory does not exist, the program will let
+            you know and update every interval that the directory
+            does not exist until it does. Then it reads every file
+            with the matching extension within that directory.
+            If the string is contained in the file, the reader
+            return true, points to the file and exits"""
+    try:
+        for f in os.listdir(args.path):
+            ex = os.path.splitext(f)[1]
+            if ex == args.ext:
+                with open('{}/{}'.format(args.path, f), 'r') as r:
+                    for i in r:
+                        call = file_reader(i, args.magic_key)
+                        if call:
+                            logger.info("\n\n"
+                                "^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^"
+                                "v^v^v^v^\n"
+                                "Magic Key Word Discovered in: {}\n"
+                                "v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^"
+                                "v^v^v^v^v\n"
+                                .format(f)
+                            )
+                            sys.exit()
+    except OSError:
+        logger.info(
+            '\n'
+            '************************************************\n'
+            'File and/or directory does not currently exist\n'
+            '************************************************\n'
+        )
 
 def file_reader(line, magic):
     if magic in line:
@@ -69,16 +77,24 @@ def file_reader(line, magic):
 
 def create_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-e', '--ext', type=str, default='.txt', help='Text extension to watch for')
-    parser.add_argument('-i', '--interval', type=float, default=2.0, help='Time interval between status checks')
+    parser.add_argument(
+        '-e', '--ext',
+        type=str, default='.txt',
+        help='Text extension to watch for'
+    )
+    parser.add_argument(
+        '-i', '--interval',
+        type=float, default=2.0,
+        help='Time interval between status checks'
+    )
     parser.add_argument('path', help='Directory path to watch')
     parser.add_argument('magic_key', help='Key phrase to watch for')
     return parser
 
 def main():
-    
     logging.basicConfig(
-        format='%(asctime)s.%(msecs)03d %(name)-12s %(levelname)-8s [%(threadName)-12s] %(message)s',
+        format='%(asctime)s.%(msecs)03d %(name)-12s %(levelname)-8s'
+        '[%(threadName)-12s] %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S'
     )
     logger.setLevel(logging.DEBUG)
@@ -103,7 +119,6 @@ def main():
         '------------------------------------\n'
         .format(__file__, str(uptime))
     )
-
 
 if __name__ == "__main__":
     main()
