@@ -25,10 +25,11 @@ def watch_dir(args):
         '\nKey Phrase: {}'
         .format(args.path, args.ext, args.magic_key)
     )
-    while True:
+    looping = True
+    while looping:
         try:
             logger.info('LOOPING...')
-            dir_read_loop(args)
+            looping = dir_read_loop(args)
             time.sleep(args.interval)
         except KeyboardInterrupt:
             logger.info(
@@ -62,7 +63,7 @@ def dir_read_loop(args):
                                 "v^v^v^v^v\n"
                                 .format(f)
                             )
-                            sys.exit()
+                            return False
     except OSError:
         logger.info(
             '\n'
