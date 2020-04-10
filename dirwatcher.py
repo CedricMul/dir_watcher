@@ -8,6 +8,8 @@ import argparse
 import datetime
 import time
 
+__author__ = "Cedric Mulvihill"
+
 logger = logging.getLogger(__file__)
 def signal_handler(sig_num, frame):
     signames = dict((k, v) for v, k in reversed(
