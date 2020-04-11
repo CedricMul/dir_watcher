@@ -25,12 +25,45 @@ def watch_dir(args):
         '\nKey Phrase: {}'
         .format(args.path, args.ext, args.magic_key)
     )
-    """Sets Bool variable to switch off the loop"""
-    looping = True
-    while looping:
+    while True:
         try:
             logger.info('LOOPING...')
-            looping = dir_read_loop(args)
+            """If the directory does not exist, the program will let you know
+            and update every interval that the directory does not exist until
+            it does. Then it reads every file with the matching extension within
+            that directory. If the string is contained in the file, the reader
+            return true, points to the file and exits"""
+            try:
+                for f in os.listdir(args.path):
+                    ex = os.path.splitext(f)[1]
+                    if ex == args.ext:
+                        with open('{}/{}'.format(args.path, f), 'r') as r:
+                            for i in r:
+                                call = file_reader(i, args.magic_key)
+                                if call:
+                                    logger.info("\n\n"
+                                        "^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^\n"
+                                        "Magic Key Word Discovered in: {}\n"
+                                        "v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v^v\n"
+                                        .format(f)
+                                    )
+                                    uptime = datetime.datetime.now() - app_start_time
+                                    logger.info(
+                                        '\n'
+                                        '------------------------------------\n'
+                                        '   Stopped: {0}\n'
+                                        '   Uptime:  {1}\n'
+                                        '------------------------------------\n'
+                                        .format(__file__, str(uptime))
+                                    )
+                                    sys.exit()
+            except OSError:
+                logger.info(
+                    '\n'
+                    '************************************************\n'
+                    'File and/or directory does not currently exist\n'
+                    '************************************************\n'
+                )
             time.sleep(args.interval)
         except KeyboardInterrupt:
             logger.info(
@@ -40,6 +73,15 @@ def watch_dir(args):
                 "<><><><>><>><>><><><><<<<><>\n"
                 "\n\n")
             break
+    uptime = datetime.datetime.now() - app_start_time
+    logger.info(
+        '\n'
+        '------------------------------------\n'
+        '   Stopped: {0}\n'
+        '   Uptime:  {1}\n'
+        '------------------------------------\n'
+        .format(__file__, str(uptime))
+    )
 
 def dir_read_loop(args):
     """If the directory does not exist, the program will let
@@ -95,6 +137,7 @@ def create_parser():
     parser.add_argument('magic_key', help='Key phrase to watch for')
     return parser
 
+app_start_time = datetime.datetime.now()
 def main():
     logging.basicConfig(
         format='%(asctime)s.%(msecs)03d %(name)-12s %(levelname)-8s'
@@ -102,7 +145,6 @@ def main():
         datefmt='%Y-%m-%d %H:%M:%S'
     )
     logger.setLevel(logging.DEBUG)
-    app_start_time = datetime.datetime.now()
     logger.info(
         '\n'
         '------------------------------------\n'
