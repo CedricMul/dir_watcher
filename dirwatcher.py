@@ -31,7 +31,7 @@ def watch_dir(args):
             """If the directory does not exist, the program will let you know
             and update every interval that the directory does not exist until
             it does. Then it reads every file with the matching extension within
-            that directory. If the string is contained in the file, the reader
+            that directory. If the string is contained in the file, the reader 
             return true, points to the file and exits"""
             try:
                 for f in os.listdir(args.path):
